@@ -25,8 +25,27 @@ References:
     Online textbook available at http://www.climate.be/textbook.
 '''
 
-import math,kepler.physics,kepler.utilities as u
+import math
 
+def newton_raphson(x,f,df,epsilon,N=50):
+    '''
+    Solve an equation using the Newton-Raphson method.
+    
+    ParametersL
+       x       Starting value
+       f       Function for equation: f(x)=0
+       df      Derivative of f
+       epsilon Maximum acceptable error
+       N       Maximum number of iterations
+    '''
+    x0 = x
+    for i in range(N):
+        x1 = x0-f(x0)/df(x0)
+        if abs(x1-x0)<epsilon:
+            return x1
+        else:
+            x0 = x1    
+    return x0
 
 def get_mean_anomaly(n,t,tau=0):
     '''Calculate Mean Anomaly using Murray & Dermott (2.39)
@@ -61,8 +80,9 @@ def get_eccentric_anomaly(M,eccentricity,tolerance=1.0e-9,k=0.85):
                tolerance      Maximum error allowed in Newton Raphson step
                k              Correction for starting value Murray & Dermott 2.64
     '''
+    
     E = M + math.copysign(k*eccentricity,math.sin(M)) # MD 2.64
-    return u.newton_raphson(
+    return newton_raphson(
         E,
         lambda x:x-eccentricity*math.sin(x)-M,
         lambda x:1-eccentricity*math.cos(x),
