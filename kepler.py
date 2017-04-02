@@ -47,6 +47,14 @@ def newton_raphson(x,f,df,epsilon,N=50):
             x0 = x1    
     return x0
 
+def clip_angle(angle,min=0,max=2*math.pi):
+    length=max-min
+    while angle>max:
+        angle-=length
+    while angle<min:
+        angle+=length        
+    return angle    
+
 def get_mean_anomaly(n,t,tau=0):
     '''Calculate Mean Anomaly using Murray & Dermott (2.39)
     Argumants: n     Mean Motion
@@ -119,7 +127,7 @@ def true_longitude_from_true_anomaly(true_anomaly,PERH=102.04):
                 PERH
     '''
 
-    return u.clip_angle(math.radians(180+PERH)+true_anomaly)
+    return clip_angle(math.radians(180+PERH)+true_anomaly)
 
 def true_anomaly_from_true_longitude(true_longitude,PERH=102.04):
     '''
