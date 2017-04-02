@@ -48,6 +48,18 @@ def newton_raphson(x,f,df,epsilon,N=50):
     return x0
 
 def clip_angle(angle,min=0,max=2*math.pi):
+    '''
+    Clip an angle so it fits into a speicifed range
+    
+    Parameters:
+       angle
+       min
+       max
+       
+    Returns: angle +/- enough multiples of 2 pi so it fits
+            into range [min,max)
+    
+    '''
     length=max-min
     while angle>max:
         angle-=length
