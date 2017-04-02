@@ -25,7 +25,7 @@ References:
     Online textbook available at http://www.climate.be/textbook.
 '''
 
-import math,physics,utilities as u
+import math,kepler.physics,kepler.utilities as u
 
 
 def get_mean_anomaly(n,t,tau=0):
