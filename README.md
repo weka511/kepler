@@ -1,7 +1,7 @@
 # kepler
-Kepler's Laws and other useful astronomical stuff. Code from here is shared by other projects.
+Code that is shared by other projects, such as [leighton](https://github.com/weka511/leighton) and [climate](https://github.com/weka511/climate)
 
 | File | Purpose |
 | ------------------------- | ------------------------------------------------------------|
-| kepler.py | Responsible for determining distance of planet from Sun at a specified time |
-| ------------------------- | ------------------------------------------------------------|
+| kepler.py | Responsible for determining distance of planet from Sun at a specified time, true longitude, etc. |
+
