@@ -4,4 +4,6 @@ Code that is shared by other projects, such as [leighton](https://github.com/wek
 | File | Purpose |
 | ------------------------- | ------------------------------------------------------------|
 | kepler.py | Responsible for determining distance of planet from Sun at a specified time, true longitude, etc. |
+| solar.py |Model for solar irradiation |
+
 
