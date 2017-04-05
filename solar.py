@@ -17,7 +17,7 @@
 Model for solar irradiation, based on Solar Radiation on Mars, 
  Joseph Appelbaum & Dennis Flood, Lewis Research Center, NASA 
 '''
-
+import math as m
 
 class Solar:
     '''
@@ -45,3 +45,11 @@ class Solar:
         beam_irradience = self.beam_irradience(r)
         return max(0,cos_zenith_angle*beam_irradience)
     
+    def ha_sunrise_sunset(self,true_longitude,latitude,sunset=True):
+        sin_declination = self.planet.sin_declination(true_longitude)
+        tan_declination = sin_declination/m.sqrt(1-sin_declination*sin_declination)
+        prod=tan_declination*m.tan(latitude)
+        if abs(prod)>1: return -1#float('nan')
+        #print(true_longitude,latitude,-tan_declination,m.tan(latitude),prod)
+        ha = m.acos(-prod)
+        return ha if sunset else -ha
