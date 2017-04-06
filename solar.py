@@ -19,6 +19,39 @@ Model for solar irradiation, based on Solar Radiation on Mars,
 '''
 import math as m
 
+def sin_declination(obliquity,true_longitude):
+    '''
+    Sine of declination
+    Appelbaum & Flood equation (7)
+    Parameters:
+         true_longitude        
+    '''
+    #print (m.sin(obliquity) ,m.sin(true_longitude),m.sin(obliquity) * m.sin(true_longitude))
+    return m.sin(obliquity) * m.sin(true_longitude)    
+
+def hour_angle(T):
+    '''
+    Hour angle
+    Appelbaum & Flood equation (8)
+    Parameters:
+         T     Time in Planetary hours
+    '''
+    return math.radians(15*T-180)
+
+def cos_zenith_angle(obliquity,true_longitude,latitude,T):
+    '''
+    Cosine of zenith angle
+    Appelbaum & Flood equation (6)
+    See also Derivation of the solar geometric 
+    relationships using vector analysis by Alistair Sproul
+
+    Renewable Energy 32 (2007) 1187-1205
+    '''
+    sin_declination=self.sin_declination(obliquity,true_longitude)
+    cos_declination=math.sqrt(1-sin_declination*sin_declination)
+    return math.sin(latitude)*sin_declination +            \
+        math.cos(latitude)*cos_declination *  math.cos(hour_angle(T))
+
 class Solar:
     '''
     Model solar irradiation.
@@ -53,3 +86,4 @@ class Solar:
         #print(true_longitude,latitude,-tan_declination,m.tan(latitude),prod)
         ha = m.acos(-prod)
         return ha if sunset else -ha
+    
