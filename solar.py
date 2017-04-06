@@ -36,7 +36,7 @@ def hour_angle(T):
     Parameters:
          T     Time in Planetary hours
     '''
-    return math.radians(15*T-180)
+    return m.radians(15*T-180)
 
 def cos_zenith_angle(obliquity,true_longitude,latitude,T):
     '''
@@ -47,10 +47,9 @@ def cos_zenith_angle(obliquity,true_longitude,latitude,T):
 
     Renewable Energy 32 (2007) 1187-1205
     '''
-    sin_declination=self.sin_declination(obliquity,true_longitude)
-    cos_declination=math.sqrt(1-sin_declination*sin_declination)
-    return math.sin(latitude)*sin_declination +            \
-        math.cos(latitude)*cos_declination *  math.cos(hour_angle(T))
+    sin_decl=sin_declination(obliquity,true_longitude)
+    cos_decl=m.sqrt(1-sin_decl*sin_decl)
+    return m.sin(latitude)*sin_decl + m.cos(latitude)*cos_decl *  m.cos(hour_angle(T))
 
 class Solar:
     '''
