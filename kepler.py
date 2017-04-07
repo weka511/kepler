@@ -49,7 +49,7 @@ def newton_raphson(x,f,df,epsilon,N=50):
 
 def clip_angle(angle,min=0,max=2*math.pi):
     '''
-    Clip an angle so it fits into a speicifed range
+    Clip an angle so it fits into a specified range
     
     Parameters:
        angle
@@ -162,7 +162,8 @@ if __name__=='__main__':
     
     try:
         unittest.main()
-        semi_major_axis = physics.Conversion.au2meters(39.2851)  #Pluto
+
+        semi_major_axis = 39.2851
         eccentricity = 0.246682  #Pluto    
         
         figure = 1
@@ -173,7 +174,7 @@ if __name__=='__main__':
     
         r0 = -1
         nu = -1
-        for i in range(360):
+        for i in range(0,360,15):
             M = get_mean_anomaly(1,math.radians(i))
             E = get_eccentric_anomaly(M,eccentricity)
             nu = get_true_anomaly(E,eccentricity)
