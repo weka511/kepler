@@ -26,7 +26,6 @@ def sin_declination(obliquity,true_longitude):
     Parameters:
          true_longitude        
     '''
-    #print (m.sin(obliquity) ,m.sin(true_longitude),m.sin(obliquity) * m.sin(true_longitude))
     return m.sin(obliquity) * m.sin(true_longitude)    
 
 def hour_angle(T):
@@ -71,18 +70,19 @@ class Solar:
  
 #   Beam irradience on a horizonal surface
 #   Appelbaum & Flood equations (5) & (6)
-    def surface_irradience(self,true_longitude,latitude,T):
-        cos_zenith_angle = self.planet.cos_zenith_angle(true_longitude,latitude,T)
-        r=self.planet.instantaneous_distance(true_longitude)
-        beam_irradience = self.beam_irradience(r)
-        return max(0,cos_zenith_angle*beam_irradience)
+    def surface_irradience(self,true_longitude,latitude,T): 
+        return max(0,
+                   cos_zenith_angle(self.planet.obliquity,
+                                    true_longitude,
+                                    latitude,T) *       \
+                   self.beam_irradience(
+                       self.planet.instantaneous_distance(true_longitude)))
     
     def ha_sunrise_sunset(self,true_longitude,latitude,sunset=True):
-        sin_declination = self.planet.sin_declination(true_longitude)
+        sin_declination = sin_declination(self.planet.obliquity,true_longitude)
         tan_declination = sin_declination/m.sqrt(1-sin_declination*sin_declination)
         prod=tan_declination*m.tan(latitude)
-        if abs(prod)>1: return -1#float('nan')
-        #print(true_longitude,latitude,-tan_declination,m.tan(latitude),prod)
+        if abs(prod)>1: return -1
         ha = m.acos(-prod)
         return ha if sunset else -ha
     
