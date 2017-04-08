@@ -28,9 +28,10 @@ def sin_declination(obliquity,true_longitude):
     Sine of declination
     Appelbaum & Flood equation (7)
     Goosse et al equation (2.22)
+    
     Parameters:
-         obliquity
-         true_longitude        
+         obliquity        Obliquity of planet's orbit relative to ecliptic
+         true_longitude   Angle from vernal equinox         
     '''
     return m.sin(obliquity) * m.sin(true_longitude)    
 
@@ -50,11 +51,15 @@ def cos_zenith_angle(obliquity,true_longitude,latitude,T):
     Goosse et al equation (2.21)
     See also Derivation of the solar geometric 
     relationships using vector analysis by Alistair Sproul
-
     Renewable Energy 32 (2007) 1187-1205
+    
+     Parameters:
+         obliquity        Obliquity of planet's orbit relative to ecliptic
+         true_longitude   Angle from vernal equinox
+         latitude         Of place where we are observing
+         T                Hour angle
     '''
     sin_decl=sin_declination(obliquity,true_longitude)
-    #print ('D',m.degrees(m.asin(sin_decl)))
     cos_decl=m.sqrt(1-sin_decl*sin_decl)
     return m.sin(latitude)*sin_decl + m.cos(latitude)*cos_decl *  m.cos(hour_angle(T))
 
@@ -79,6 +84,9 @@ class Solar:
            Beam Irradience in W/m2
            Appelbaum & Flood equation (1)
            Goosse et al equation (2.18)
+           
+           Parameters:
+               r          Distance from Sun
         '''        
         return self.S/(r*r)
  
@@ -87,6 +95,11 @@ class Solar:
         Beam irradience on a horizonal surface
            Appelbaum & Flood equations (5) & (6)
            Goosse et al equation (2.21)
+           
+      Parameters:
+         true_longitude   Angle from vernal equinox
+         latitude         Of place where we are observing
+         T                Hour angle
         '''
         return max(0,
                    cos_zenith_angle(
@@ -96,28 +109,40 @@ class Solar:
                    self.beam_irradience(
                        self.planet.instantaneous_distance(true_longitude)))
     
-    def surface_irradience_daily(self,true_longitude,latitude):
+    def surface_irradience_daily(self,true_longitude,latitude,total=True):
         '''
         Daily Insolation on a horizontal surface
         Goosse et al equation (2.26)
+        
+        Parameters:
+           true_longitude   Angle from vernal equinox
+           latitude         Of place where we are observing
+           total            Indicates whether to return total 
+                            for day or avaerage per second
         '''
         ha = self.hour_angle_sunrise_sunset(true_longitude,latitude)
         sin_decl = sin_declination(self.planet.obliquity,true_longitude)
         cos_decl = m.sqrt(1-sin_decl*sin_decl)
         beam_irradience = self.beam_irradience(self.planet.instantaneous_distance(true_longitude))
-        return beam_irradience * (86400/m.pi) * (ha*m.sin(latitude)*sin_decl + m.cos(latitude)*cos_decl*m.sin(ha))
+        multiplier = 86400/m.pi if total else 1/m.pi
+        return beam_irradience * multiplier * (ha*m.sin(latitude)*sin_decl + m.cos(latitude)*cos_decl*m.sin(ha))
     
     def hour_angle_sunrise_sunset(self,true_longitude,latitude,sunset=True):
         '''
         Hour angle for Sunrise & Sunset
         Goosse et al equation (2.24)
+        
+        Parameters:
+          true_longitude   Angle from vernal equinox
+          latitude         Of place where we are observing
+          sunset           True for sunset, False for Sunrise
         '''
         sin_decl = sin_declination(self.planet.obliquity,true_longitude)
         tan_declination = sin_decl/m.sqrt(1-sin_decl*sin_decl)
         prod=tan_declination*m.tan(latitude)
         if abs(prod)<1:
             return  m.acos(-prod)*( 1 if sunset else -1)
-        else: # See Goosse et al, pargraph preceding figure 2.11
+        else: # See Goosse et al, paragraph preceding figure 2.11
             if latitude>0:
                 if prod>1:
                     if 0<true_longitude and true_longitude<m.pi:
@@ -129,6 +154,15 @@ class Solar:
             return 0
     
     def length_of_day(self,true_longitude,latitude):
+        '''
+        Calculate Length of Day
+        
+        Goosse et al equation (2.22)
+        
+        Parameters:
+          true_longitude   Angle from vernal equinox
+          latitude         Of place where we are observing
+        '''
         return max(0,
                    (24/m.pi)*self.hour_angle_sunrise_sunset(true_longitude,latitude))
 
