@@ -97,6 +97,10 @@ class Solar:
                        self.planet.instantaneous_distance(true_longitude)))
     
     def surface_irradience_daily(self,true_longitude,latitude):
+        '''
+        Daily Insolation on a horizontal surface
+        Goosse et al equation (2.26)
+        '''
         ha = self.hour_angle_sunrise_sunset(true_longitude,latitude)
         sin_decl = sin_declination(self.planet.obliquity,true_longitude)
         cos_decl = m.sqrt(1-sin_decl*sin_decl)
@@ -113,14 +117,13 @@ class Solar:
         prod=tan_declination*m.tan(latitude)
         if abs(prod)<1:
             return  m.acos(-prod)*( 1 if sunset else -1)
-        else:
+        else: # See Goosse et al, pargraph preceding figure 2.11
             if latitude>0:
                 if prod>1:
                     if 0<true_longitude and true_longitude<m.pi:
                         return m.pi
             if latitude<0:
                 if prod>1:
-                    #print(latitude,true_longitude,prod)
                     if m.pi<true_longitude and true_longitude<2*m.pi:
                         return m.pi
             return 0
