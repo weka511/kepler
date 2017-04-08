@@ -96,6 +96,13 @@ class Solar:
                    self.beam_irradience(
                        self.planet.instantaneous_distance(true_longitude)))
     
+    def surface_irradience_daily(self,true_longitude,latitude):
+        ha = self.hour_angle_sunrise_sunset(true_longitude,latitude)
+        sin_decl = sin_declination(self.planet.obliquity,true_longitude)
+        cos_decl = m.sqrt(1-sin_decl*sin_decl)
+        beam_irradience = self.beam_irradience(self.planet.instantaneous_distance(true_longitude))
+        return beam_irradience * (86400/m.pi) * (ha*m.sin(latitude)*sin_decl + m.cos(latitude)*cos_decl*m.sin(ha))
+    
     def hour_angle_sunrise_sunset(self,true_longitude,latitude,sunset=True):
         '''
         Hour angle for Sunrise & Sunset
@@ -105,13 +112,16 @@ class Solar:
         tan_declination = sin_decl/m.sqrt(1-sin_decl*sin_decl)
         prod=tan_declination*m.tan(latitude)
         if abs(prod)>1: return 0
-        ha = m.acos(-prod)
-        return ha if sunset else -ha
+        sign = 1 if sunset else -1
+        return  m.acos(-prod)*sign
     
     def length_of_day(self,true_longitude,latitude):
-        return max(0,
+        ll= max(0,
                    (24/m.pi)*self.hour_angle_sunrise_sunset(true_longitude,
                                                             latitude))
+        print (m.degrees(true_longitude),m.degrees(latitude),ll)
+        return ll
+    
 if __name__=='__main__':
     import unittest
     
@@ -163,16 +173,22 @@ if __name__=='__main__':
             true_longitude = 3*m.pi/2
             latitude        = m.pi/2
             self.assertAlmostEqual(obliquity+latitude,
-                                   m.acos(cos_zenith_angle(obliquity,true_longitude,latitude,12)),places=1) 
+                                   m.acos(cos_zenith_angle(obliquity,true_longitude,latitude,12)),
+                                   places=1) 
             
         #def test_winter_solstice_sp(self):
             #true_longitude = 3*m.pi/2
             #latitude        = -m.pi/2
             #self.assertAlmostEqual(obliquity+latitude,
                                    #m.acos(cos_zenith_angle(obliquity,true_longitude,latitude,12)),places=1)         
-            
+        #def test_poles(self):
+            #latitude = -m.pi/2+obliquity
+            #true_longitude = -m.pi/2
+            #self.assertAlmostEqual(42,
+                                   #m.acos(cos_zenith_angle(obliquity,true_longitude,latitude,12)),
+                                   #places=1)            
     try:
         unittest.main()
     except SystemExit as inst:
-        if inst.args[0] is True: # raised by sys.exit(True) when tests failed
+        if inst.args[0]: # raised by sys.exit(True) when tests failed
             raise     
