@@ -111,17 +111,24 @@ class Solar:
         sin_decl = sin_declination(self.planet.obliquity,true_longitude)
         tan_declination = sin_decl/m.sqrt(1-sin_decl*sin_decl)
         prod=tan_declination*m.tan(latitude)
-        if abs(prod)>1: return 0
-        sign = 1 if sunset else -1
-        return  m.acos(-prod)*sign
+        if abs(prod)<1:
+            return  m.acos(-prod)*( 1 if sunset else -1)
+        else:
+            if latitude>0:
+                if prod>1:
+                    if 0<true_longitude and true_longitude<m.pi:
+                        return m.pi
+            if latitude<0:
+                if prod>1:
+                    #print(latitude,true_longitude,prod)
+                    if m.pi<true_longitude and true_longitude<2*m.pi:
+                        return m.pi
+            return 0
     
     def length_of_day(self,true_longitude,latitude):
-        ll= max(0,
-                   (24/m.pi)*self.hour_angle_sunrise_sunset(true_longitude,
-                                                            latitude))
-        print (m.degrees(true_longitude),m.degrees(latitude),ll)
-        return ll
-    
+        return max(0,
+                   (24/m.pi)*self.hour_angle_sunrise_sunset(true_longitude,latitude))
+
 if __name__=='__main__':
     import unittest
     
@@ -169,10 +176,10 @@ if __name__=='__main__':
                                    m.acos(cos_zenith_angle(obliquity,true_longitude,latitude,12)),
                                    places=1)
             
-        def test_winter_solstice_np(self):
-            true_longitude = 3*m.pi/2
+        def test_spring_equinox(self):
+            true_longitude = m.pi
             latitude        = m.pi/2
-            self.assertAlmostEqual(obliquity+latitude,
+            self.assertAlmostEqual(latitude,
                                    m.acos(cos_zenith_angle(obliquity,true_longitude,latitude,12)),
                                    places=1) 
             
